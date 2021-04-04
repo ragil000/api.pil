@@ -54,6 +54,11 @@ class ContentModel extends CI_Model {
         $optionalPost = ['image', 'youtube'];
         $checkPost = true;
         $countPost = 0;
+        $uploadImage = $this->__uploadImage();
+        if($uploadImage['status']) {
+            $post['image'] = $uploadImage['file_name'];
+        }
+
         foreach($post as $key => $value) {
             if(!in_array($key, $allowPost)) {
                 if(!in_array($key, $optionalPost)) {
@@ -66,11 +71,12 @@ class ContentModel extends CI_Model {
                 }else {
                     $countPost--;
                 }
+            }else {
+                if(empty($value)){
+                    $checkPost = false;
+                }
             }
             
-            if(empty($value)){
-                $checkPost = false;
-            }
             $countPost++;
         }
 
@@ -113,121 +119,67 @@ class ContentModel extends CI_Model {
         return $results;
     }
 
-    public function signin($post) {
-        $allowPost = ['username', 'password'];
-        $checkPost = true;
-        $countPost = 0;
-        foreach($post as $key => $value) {
-            if(!in_array($key, $allowPost)) {
-                $results = [
-                    'status' => false,
-                    'message' => 'data ['.$key.'] tidak dikenali',
-                    'response_code' => 400
-                ];
-                return $results;
-            }
-            
-            if(empty($value)){
-                $checkPost = false;
-            }
-            $countPost++;
-        }
-
-        if($countPost != 2) {
-            $checkPost = false;
-        }
-
-        if(!$checkPost) {
-            $results = [
-                'status' => false,
-                'message' => 'data request salah',
-                'response_code' => 400
-            ];
-            return $results;
-        }
-
-        $get = $this->db->get_where('users', ['username' => $post['username']]);
+    public function putData($_id, $put) {
+        $get = $this->db->get_where('contents', ['_id' => $_id]);
         if($get->num_rows() > 0) {
+            $allowPut = ['title', 'description'];
+            $optionalPut = ['image', 'youtube'];
+            $checkPut = true;
+            $countPut = 0;
+            $uploadImage = $this->__uploadImage();
             $row = $get->row();
-            $checkPassword = password_verify($post['password'], $row->password);
-            if($checkPassword) {
-                $results = [
-                    'status' => false,
-                    'message' => 'berhasil masuk',
-                    'data' => [
-                        '_id' => $row->_id,
-                        'username' => $row->username,
-                        'role' => $row->role,
-                        'status' => $row->status
-                    ],
-                    'response_code' => 200
-                ];
+            if($uploadImage['status']) {
+                $put['image'] = $uploadImage['file_name'];
+                if($row->image) {
+                    unlink('./assets/img/post/'.$row->image);
+                }
             }else {
-                $results = [
-                    'status' => false,
-                    'message' => 'password salah',
-                    'response_code' => 400
-                ];
+                $put['image'] = $row->image;
             }
-        }else {
-            $results = [
-                'status' => false,
-                'message' => 'username salah',
-                'response_code' => 400
-            ];
-        }
-        return $results;
-    }
-
-    public function signup($post) {
-        $allowPost = ['username', 'password', 'role'];
-        $checkPost = true;
-        $countPost = 0;
-        $post['role'] = 'user';
-        foreach($post as $key => $value) {
-            if(!in_array($key, $allowPost)) {
+    
+            foreach($put as $key => $value) {
+                if(!in_array($key, $allowPut)) {
+                    if(!in_array($key, $optionalPut)) {
+                        $results = [
+                            'status' => false,
+                            'message' => 'data ['.$key.'] tidak dikenali',
+                            'response_code' => 400
+                        ];
+                        return $results;
+                    }else {
+                        $countPut--;
+                    }
+                }else {
+                    if(empty($value)){
+                        $checkPost = false;
+                    }
+                }
+                
+                $countPut++;
+            }
+    
+            if($countPut != 2) {
+                $checkPut = false;
+            }
+    
+            if(!$checkPut) {
                 $results = [
                     'status' => false,
-                    'message' => 'data ['.$key.'] tidak dikenali',
+                    'message' => 'data request salah',
                     'response_code' => 400
                 ];
                 return $results;
             }
+    
+            $put['slug'] = $row->slug;
+            $put['updated_at'] = date('Y-m-d h:m:s');
+            $put['updated_by'] = 1;
             
-            if(empty($value)){
-                $checkPost = false;
-            }
-            $countPost++;
-        }
-
-        if($countPost != 3) {
-            $checkPost = false;
-        }
-
-        if(!$checkPost) {
-            $results = [
-                'status' => false,
-                'message' => 'data request salah',
-                'response_code' => 400
-            ];
-            return $results;
-        }
-
-        $get = $this->db->get_where('users', ['username' => $post['username']]);
-        if($get->num_rows() > 0) {
-            $results = [
-                'status' => false,
-                'message' => 'username sudah dipakai',
-                'response_code' => 400
-            ];
-        }else {
-            $password_hash = password_hash($post['password'], PASSWORD_BCRYPT);
-            $post['password'] = $password_hash;
-            $insert = $this->db->insert('users', $post);
-            if($insert) {
+            $update = $this->db->update('contents', $put, ['_id' => $_id]);
+            if($update) {
                 $results = [
                     'status' => true,
-                    'message' => 'berhasil mendaftar',
+                    'message' => 'berhasil mengubah data',
                     'response_code' => 200
                 ];
             }else {
@@ -237,25 +189,109 @@ class ContentModel extends CI_Model {
                     'response_code' => 500
                 ];
             }
+        }else {
+            $results = [
+                'status' => false,
+                'message' => 'data tidak ditemukan',
+                'response_code' => 400
+            ];
         }
         return $results;
     }
 
-    public function deleteAccount($id = null) {
-        if($id === null) {
-            return $this->db->affected_rows();
+    public function deleteData($_id) {
+        $get = $this->db->get_where('contents', ['_id' => $_id]);
+        if($get->num_rows() > 0) {
+            $row = $get->row();
+            if($row->image) {
+                unlink('./assets/img/post/'.$row->image);
+            }
+            $delete = $this->db->delete('contents', ['_id' => $_id]);
+            if($delete) {
+                $results = [
+                    'status' => true,
+                    'message' => 'berhasil menghapus data',
+                    'response_code' => 200
+                ];
+            }else {
+                $results = [
+                    'status' => false,
+                    'message' => 'kesalahan saat memproses request',
+                    'response_code' => 500
+                ];
+            }
         }else {
-            $this->db->delete('tb_akun', ['id_tb_akun' => $id]);
-            return $this->db->affected_rows();
+            $results = [
+                'status' => false,
+                'message' => 'data tidak ditemukan',
+                'response_code' => 400
+            ];
         }
+        return $results;
     }
 
-    public function putAccount($data = null, $id = null) {
-        if($id === null || $data === null) {
-            return $this->db->affected_rows();
-        }else {
-            $this->db->update('tb_akun', $data, ['id_tb_akun' => $id]);
-            return $this->db->affected_rows();
+    protected function __uploadImage(){
+        $time                       = time();
+        $config['upload_path']      = './assets/img/post/';
+        $config['allowed_types']    = 'jpeg|jpg|png';
+        $config['file_name']        = $time.'.jpg';
+        $config['overwrite']		= TRUE;
+        $config['max_size']         =  2048;
+        // $config['max_width']            = 1024;
+        // $config['max_height']           = 768;
+
+        $this->load->library('upload', $config);
+        if (!$this->upload->do_upload('image')){
+            $results        = [
+                'status'    => FALSE
+            ];
+        }else{
+            $results        = [
+                'status'    => TRUE,
+                'file_name' => $config['file_name']
+            ];
+            $resize_image   = $this->__createThumbs($config['file_name']);
+            if(!$resize_image) {
+                $results    = [
+                    'status'    => FALSE
+                ];
+            }
         }
+        return $results;
+    }
+
+    protected function __createThumbs($file_name){
+        $status     = TRUE;
+        // Image resizing config
+        $config = array(
+            // image Medium
+            array(
+                'image_library' => 'GD2',
+                'source_image'  => './assets/img/post/'.$file_name,
+                'maintain_ratio'=> FALSE,
+                'width'         => 600,
+                'height'        => 400,
+                'new_image'     => './assets/img/post/smalls/'.$file_name
+                ),
+            // Image Small
+            array(
+                'image_library' => 'GD2',
+                'source_image'  => './assets/img/post/'.$file_name,
+                'maintain_ratio'=> FALSE,
+                'width'         => 80,
+                'height'        => 60,
+                'new_image'     => './assets/img/post/thumbs/'.$file_name
+            )
+        );
+ 
+        $this->load->library('image_lib', $config[0]);
+        foreach ($config as $item){
+            $this->image_lib->initialize($item);
+            if(!$this->image_lib->resize()){
+                $status    = FALSE;
+            }
+            $this->image_lib->clear();
+        }
+        return $status;
     }
 }

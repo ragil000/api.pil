@@ -32,7 +32,7 @@ class ContentController extends CI_Controller {
         $this->response($results, $responseCode);
     }
 
-    public function detail_get($menu_id, $_id) {        
+    public function detail_get($menu_id, $_id) {
         $results = $this->ContentModel->getDataByMenuIDAndID($menu_id, $_id);
         $responseCode = $results['response_code'];
         unset($results['response_code']);
@@ -48,9 +48,8 @@ class ContentController extends CI_Controller {
         $this->response($results, $responseCode);
     }
 
-    public function index_put() {
-        $_id = $this->get('_id');
-        $put = $this->put();
+    public function update_post($_id) {
+        $put = $this->post();
 
         $results = $this->ContentModel->putData($_id, $put);
         $responseCode = $results['response_code'];
@@ -58,9 +57,7 @@ class ContentController extends CI_Controller {
         $this->response($results, $responseCode);
     }
 
-    public function index_delete() {
-        $_id = $this->get('_id');
-
+    public function delete_post($_id) {
         $results = $this->ContentModel->deleteData($_id);
         $responseCode = $results['response_code'];
         unset($results['response_code']);

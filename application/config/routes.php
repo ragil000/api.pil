@@ -66,6 +66,7 @@ $route['api/menu/(:any)'] = 'api/MenuController/$1';
 
 $route['api/content'] = 'api/ContentController/index';
 $route['api/content/(:num)'] = 'api/ContentController/index/$1';
+$route['api/content/(:any)/(:num)'] = 'api/ContentController/$1/$2';
 $route['api/content/(:any)/(:num)/(:num)'] = 'api/ContentController/$1/$2/$3';
 
 $route['api/example/users/(:num)'] = 'api/example/users/id/$1'; // Example 4

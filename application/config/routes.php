@@ -69,5 +69,13 @@ $route['api/content/(:num)'] = 'api/ContentController/index/$1';
 $route['api/content/(:any)/(:num)'] = 'api/ContentController/$1/$2';
 $route['api/content/(:any)/(:num)/(:num)'] = 'api/ContentController/$1/$2/$3';
 
+$route['api/quist'] = 'api/QuistController/index';
+$route['api/quist/(:any)/(:num)'] = 'api/QuistController/$1/$2';
+$route['api/quist/(:any)'] = 'api/QuistController/$1';
+
+$route['api/chat'] = 'api/ChatController/index';
+$route['api/chat/(:any)/(:num)'] = 'api/ChatController/$1/$2';
+$route['api/chat/(:any)'] = 'api/ChatController/$1';
+
 $route['api/example/users/(:num)'] = 'api/example/users/id/$1'; // Example 4
 $route['api/example/users/(:num)(\.)([a-zA-Z0-9_-]+)(.*)'] = 'api/example/users/id/$1/format/$3$4'; // Example 8

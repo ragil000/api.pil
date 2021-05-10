@@ -1,15 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.7
+-- version 4.6.5.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 10, 2021 at 06:54 AM
--- Server version: 10.1.30-MariaDB
--- PHP Version: 5.6.33
+-- Generation Time: Mar 21, 2021 at 09:50 
+-- Server version: 10.1.21-MariaDB
+-- PHP Version: 5.6.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -21,51 +19,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `pil_apps`
 --
-
--- --------------------------------------------------------
-
---
--- Table structure for table `answers`
---
-
-CREATE TABLE `answers` (
-  `_id` int(11) NOT NULL,
-  `quist_id` int(11) NOT NULL,
-  `answer` varchar(45) NOT NULL,
-  `is_correct` enum('yes','no') NOT NULL DEFAULT 'no'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `answers`
---
-
-INSERT INTO `answers` (`_id`, `quist_id`, `answer`, `is_correct`) VALUES
-(5, 2, 'benar', 'no'),
-(6, 2, 'tidak salah lagi', 'yes'),
-(7, 2, 'setuju', 'no'),
-(8, 2, 'tepat', 'no');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `chats`
---
-
-CREATE TABLE `chats` (
-  `_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `chat` varchar(250) NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `created_by` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `chats`
---
-
-INSERT INTO `chats` (`_id`, `user_id`, `chat`, `created_at`, `created_by`) VALUES
-(1, 2, 'hy..', '2021-05-10 11:43:18', 2),
-(3, 2, 'hy jg..', '2021-05-10 11:43:32', 1);
 
 -- --------------------------------------------------------
 
@@ -134,50 +87,6 @@ INSERT INTO `menus` (`_id`, `title`, `slug`, `status`, `created_at`, `created_by
 -- --------------------------------------------------------
 
 --
--- Table structure for table `quists`
---
-
-CREATE TABLE `quists` (
-  `_id` int(11) NOT NULL,
-  `question` varchar(350) NOT NULL,
-  `status` enum('active','suspend') NOT NULL DEFAULT 'active',
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `created_by` int(11) NOT NULL,
-  `updated_at` datetime DEFAULT NULL,
-  `updated_by` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `quists`
---
-
-INSERT INTO `quists` (`_id`, `question`, `status`, `created_at`, `created_by`, `updated_at`, `updated_by`) VALUES
-(2, 'Ini pertanyaan?', 'active', '2021-05-10 10:52:47', 1, NULL, NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `quist_histories`
---
-
-CREATE TABLE `quist_histories` (
-  `_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `quist_id` int(11) NOT NULL,
-  `is_correct` enum('yes','no') NOT NULL DEFAULT 'no',
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `quist_histories`
---
-
-INSERT INTO `quist_histories` (`_id`, `user_id`, `quist_id`, `is_correct`, `created_at`) VALUES
-(3, 2, 2, 'no', '2021-05-10 11:25:15');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `users`
 --
 
@@ -204,18 +113,6 @@ INSERT INTO `users` (`_id`, `username`, `password`, `role`, `status`, `created_a
 --
 
 --
--- Indexes for table `answers`
---
-ALTER TABLE `answers`
-  ADD PRIMARY KEY (`_id`);
-
---
--- Indexes for table `chats`
---
-ALTER TABLE `chats`
-  ADD PRIMARY KEY (`_id`);
-
---
 -- Indexes for table `contents`
 --
 ALTER TABLE `contents`
@@ -225,18 +122,6 @@ ALTER TABLE `contents`
 -- Indexes for table `menus`
 --
 ALTER TABLE `menus`
-  ADD PRIMARY KEY (`_id`);
-
---
--- Indexes for table `quists`
---
-ALTER TABLE `quists`
-  ADD PRIMARY KEY (`_id`);
-
---
--- Indexes for table `quist_histories`
---
-ALTER TABLE `quist_histories`
   ADD PRIMARY KEY (`_id`);
 
 --
@@ -250,48 +135,20 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `answers`
---
-ALTER TABLE `answers`
-  MODIFY `_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
--- AUTO_INCREMENT for table `chats`
---
-ALTER TABLE `chats`
-  MODIFY `_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
 -- AUTO_INCREMENT for table `contents`
 --
 ALTER TABLE `contents`
   MODIFY `_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
-
 --
 -- AUTO_INCREMENT for table `menus`
 --
 ALTER TABLE `menus`
   MODIFY `_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT for table `quists`
---
-ALTER TABLE `quists`
-  MODIFY `_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `quist_histories`
---
-ALTER TABLE `quist_histories`
-  MODIFY `_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-COMMIT;
-
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
